@@ -7,16 +7,20 @@
  ******************************************************************************/
 package org.iff.datarest.core;
 
-import org.iff.datarest.core.model.DataSourceModel;
 import org.apache.commons.dbcp.BasicDataSource;
-import org.iff.infra.util.Assert;
-import org.iff.infra.util.Exceptions;
-import org.iff.infra.util.MapHelper;
+import org.apache.commons.lang3.StringUtils;
+import org.iff.datarest.core.model.DataSourceModel;
+import org.iff.infra.util.*;
 
 import javax.sql.DataSource;
+import java.io.Closeable;
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
+
+import static org.iff.datarest.util.SystemHelper.NAMESPACE_SYS;
+import static org.iff.datarest.util.SystemHelper.getProps;
 
 /**
  * @author <a href="mailto:iffiff1@gmail.com">Tyler Chen</a>
@@ -25,17 +29,36 @@ import java.util.Properties;
 public class DataSourceFactory {
     private static Map<String, DataSource> dataSourceCacheMap = new HashMap<String, DataSource>();
 
+    static {
+        ShutdownHookHelper.register("DataSourceFactory.dataSourceCacheMap", new Closeable() {
+            public void close() throws IOException {
+                for (Map.Entry<String, DataSource> entry : dataSourceCacheMap.entrySet()) {
+                    Logger.info("DataSourceFactory shutdown datasource: " + entry.getKey());
+                    try {
+                        ((BasicDataSource) entry.getValue()).close();
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                }
+            }
+        });
+    }
+
     public static DataSource get(String name) {
-        Assert.notBlank(name);
         return dataSourceCacheMap.get(name);
     }
 
     public static DataSource getSystemDS() {
-        DataSource dataSource = dataSourceCacheMap.get("_default_");
+        DataSource dataSource = dataSourceCacheMap.get(NAMESPACE_SYS);
         if (dataSource == null) {
-            dataSource = create("_default_", "iff", "iff",
-                    "jdbc:mysql://localhost:3306/new_qdp_0201?useUnicode=true&characterEncoding=UTF-8&zeroDateTimeBehavior=convertToNull&useSSL=false",
-                    "com.mysql.jdbc.Driver", "select 1", 3, 10);
+            dataSource = create(NAMESPACE_SYS,
+                    getProps().getProperty("db.user"),
+                    getProps().getProperty("db.password"),
+                    getProps().getProperty("db.url"),
+                    getProps().getProperty("db.driver"),
+                    getProps().getProperty("db.validationQuery"),
+                    NumberHelper.getInt(getProps().getProperty("db.initConnection"), 3),
+                    NumberHelper.getInt(getProps().getProperty("db.maxConnection"), 10));
         }
         return dataSource;
     }
@@ -49,20 +72,7 @@ public class DataSourceFactory {
         Assert.notBlank(validationQuery);
         Properties props = new Properties();
         {
-            Map map = MapHelper.toMap(/**/
-                    "username", user, /**/
-                    "password", password, /**/
-                    "url", url, /**/
-                    "driverClassName", driver, /**/
-                    "defaultAutoCommit", "false", /**/
-                    "initialSize", String.valueOf(Math.max(initConnection, 3)), /**/
-                    "maxActive", String.valueOf(Math.max(maxConnection, 3)), /**/
-                    "maxWait", "60000", /**/
-                    "validationQuery", validationQuery, /**/
-                    "testWhileIdle", "true", /**/
-                    "testOnBorrow", "false", /**/
-                    "testOnReturn", "false" /**/
-            );
+            Map map = getDataSourceConfig(user, password, url, driver, validationQuery, initConnection, maxConnection);
             props.putAll(map);
         }
         try {
@@ -81,6 +91,23 @@ public class DataSourceFactory {
         return null;
     }
 
+    public static Map<String, String> getDataSourceConfig(String user, String password, String url, String driver, String validationQuery, int initConnection, int maxConnection) {
+        return MapHelper.toMap(/**/
+                "username", user, /**/
+                "password", password, /**/
+                "url", url, /**/
+                "driverClassName", driver, /**/
+                "defaultAutoCommit", "false", /**/
+                "initialSize", String.valueOf(Math.max(initConnection, 3)), /**/
+                "maxActive", String.valueOf(Math.max(maxConnection, 3)), /**/
+                "maxWait", "60000", /**/
+                "validationQuery", validationQuery, /**/
+                "testWhileIdle", "true", /**/
+                "testOnBorrow", "false", /**/
+                "testOnReturn", "false" /**/
+        );
+    }
+
     public static DataSource create(DataSourceModel model) {
         Assert.notNull(model);
         Assert.notBlank(model.getName());
@@ -90,20 +117,7 @@ public class DataSourceFactory {
         Assert.notBlank(model.getValidationQuery());
         Properties props = new Properties();
         {
-            Map map = MapHelper.toMap(/**/
-                    "username", model.getUser(), /**/
-                    "password", model.getPassword(), /**/
-                    "url", model.getUrl(), /**/
-                    "driverClassName", model.getDriver(), /**/
-                    "defaultAutoCommit", "false", /**/
-                    "initialSize", String.valueOf(Math.max(model.getInitConnection(), 3)), /**/
-                    "maxActive", String.valueOf(Math.max(model.getMaxConnection(), 3)), /**/
-                    "maxWait", "60000", /**/
-                    "validationQuery", model.getValidationQuery(), /**/
-                    "testWhileIdle", "true", /**/
-                    "testOnBorrow", "false", /**/
-                    "testOnReturn", "false" /**/
-            );
+            Map map = getDataSourceConfig(model.getUser(), model.getPassword(), model.getUrl(), model.getDriver(), model.getValidationQuery(), model.getInitConnection(), model.getMaxConnection());
             props.putAll(map);
         }
         try {
@@ -123,10 +137,62 @@ public class DataSourceFactory {
         return null;
     }
 
+    public static DataSource create(String name) {
+        Assert.notBlank(name);
+        if ("IFF_REST_SYSTEM".equals(name)) {
+            return getSystemDS();
+        }
+        DomainEventService.Tuple params = DomainEventService.Tuple.queryOne("IFF_REST_SYSTEM", "DataSource", "getByNamespace", name);
+        EventBusHelper.me().syncEvent(DomainEventService.EVENT_NAME, params);
+
+        if (params.hasError()) {
+            Exceptions.runtime("DataSourceFactory cannot load datasource by name: " + name, (Throwable) params.result());
+        }
+        //jdbc:mysql://localhost:3306/database?useUnicode=true&characterEncoding=utf8[username=&password=&...]
+        DataSourceModel dsm = new DataSourceModel().init("IFF_REST_SYSTEM", "DataSource").rePutAll((Map<String, Object>) params.result());
+
+        Properties props = new Properties();
+        {
+            String jdbcUrl = StringUtils.substringBeforeLast(dsm.getUrl(), "[");
+            String paramStr = StringUtils.substringBeforeLast(StringUtils.substringAfterLast(dsm.getUrl(), "["), "]");
+            String[] pairs = StringUtils.split(paramStr, '&');
+            for (String pair : pairs) {
+                String[] keyValue = StringUtils.split(pair, '=');
+                if (keyValue.length != 2) {
+                    Logger.warn("DataSourceFactory datasource created by illegal parameters! Datasource " + name + " parameters contains illegal format: " + paramStr);
+                }
+                props.put(keyValue[0], keyValue[1]);
+            }
+        }
+        try {
+            DataSource dataSource = org.apache.commons.dbcp.BasicDataSourceFactory.createDataSource(props);
+            {
+                DataSource ds = dataSourceCacheMap.get(name);
+                if (ds != null && ds instanceof BasicDataSource) {
+                    ((BasicDataSource) ds).close();
+                }
+            }
+            dataSourceCacheMap.put(name, dataSource);
+            return dataSource;
+        } catch (Exception e) {
+            e.printStackTrace();
+            Exceptions.runtime("Error invoke BasicDataSourceFactory.createDataSource", e);
+        }
+        return null;
+    }
+
     public static DataSource getOrCreate(DataSourceModel model) {
         DataSource dataSource = get(model.getName());
         if (dataSource == null) {
             dataSource = create(model);
+        }
+        return dataSource;
+    }
+
+    public static DataSource getOrCreate(String name) {
+        DataSource dataSource = get(name);
+        if (dataSource == null) {
+            dataSource = create(name);
         }
         return dataSource;
     }

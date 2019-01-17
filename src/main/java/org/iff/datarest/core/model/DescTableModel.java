@@ -9,7 +9,9 @@ package org.iff.datarest.core.model;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * @author <a href="mailto:iffiff1@gmail.com">Tyler Chen</a>
@@ -23,7 +25,9 @@ public class DescTableModel implements Serializable {
     private String name;
     private String type;
     private String remarks;
-    private List<DescColumnModel> columns = new ArrayList<DescColumnModel>();
+    private List<DescColumnModel> columns = new ArrayList<>();
+    private Map<String, DescColumnModel> pks = new LinkedHashMap<>();
+    private Map<String, DescColumnModel> fks = new LinkedHashMap<>();
 
     public DescTableModel() {
         super();
@@ -92,9 +96,32 @@ public class DescTableModel implements Serializable {
         this.columns = columns;
     }
 
-    @Override
+    public Map<String, DescColumnModel> getPks() {
+        return pks;
+    }
+
+    public void setPks(Map<String, DescColumnModel> pks) {
+        this.pks = pks;
+    }
+
+    public Map<String, DescColumnModel> getFks() {
+        return fks;
+    }
+
+    public void setFks(Map<String, DescColumnModel> fks) {
+        this.fks = fks;
+    }
+
     public String toString() {
-        return "DescTable [catalog=" + catalog + ", schema=" + schema + ", name=" + name + ", type=" + type
-                + ", remarks=" + remarks + ", columns=" + columns + "]";
+        return "DescTableModel{" +
+                "catalog='" + catalog + '\'' +
+                ", schema='" + schema + '\'' +
+                ", name='" + name + '\'' +
+                ", type='" + type + '\'' +
+                ", remarks='" + remarks + '\'' +
+                ", columns=" + columns +
+                ", pks=" + pks +
+                ", fks=" + fks +
+                '}';
     }
 }

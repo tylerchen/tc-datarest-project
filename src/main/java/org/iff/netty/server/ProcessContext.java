@@ -21,7 +21,9 @@ import org.apache.commons.lang3.StringUtils;
 import org.iff.infra.util.Assert;
 import org.iff.infra.util.Exceptions;
 import org.iff.infra.util.HttpHelper;
+import org.iff.infra.util.PreRequiredHelper;
 
+import java.beans.Transient;
 import java.io.File;
 import java.net.InetSocketAddress;
 import java.net.SocketAddress;
@@ -282,6 +284,7 @@ public class ProcessContext {
         return headers;
     }
 
+    @Transient
     private String getIpAddr(Map<String, String> headers) {
         String ip = "";
         String mark = headers.get("proxy-enable");
@@ -366,6 +369,218 @@ public class ProcessContext {
             ioe.printStackTrace();
             Exceptions.runtime("Decode post data error!", ioe);
         }
-        return Tuple.of(requestParameters, requestFiles);
+        return Tuple.create(requestParameters, requestFiles);
+    }
+
+    @Transient
+    public boolean isGet() {
+        return HttpMethod.GET.name().equals(getHttpMethod());
+    }
+
+    @Transient
+    public boolean isPost() {
+        return HttpMethod.POST.name().equals(getHttpMethod());
+    }
+
+    @Transient
+    public boolean isPut() {
+        return HttpMethod.PUT.name().equals(getHttpMethod());
+    }
+
+    @Transient
+    public boolean isDelete() {
+        return HttpMethod.DELETE.name().equals(getHttpMethod());
+    }
+
+    @Transient
+    public boolean isProxy() {
+        return false;
+    }
+
+    /**
+     * A class for carry different parameter type.
+     *
+     * @author <a href="mailto:iffiff1@gmail.com">Tyler Chen</a>
+     * @since Sep 24, 2016
+     */
+    public static class Tuple<F, S> {
+        private F first;
+        private S second;
+
+        private Tuple() {
+        }
+
+        private Tuple(F first, S second) {
+            this.first = first;
+            this.second = second;
+        }
+
+        public static <F, S> Tuple<F, S> empty() {
+            return new Tuple<F, S>();
+        }
+
+        public static <F, S> Tuple<F, S> create(F first, S second) {
+            return new Tuple<F, S>(first, second);
+        }
+
+        public F getFirst() {
+            return first;
+        }
+
+        public void setFirst(F first) {
+            this.first = first;
+        }
+
+        public S getSecond() {
+            return second;
+        }
+
+        public void setSecond(S second) {
+            this.second = second;
+        }
+
+        public boolean isEmpty() {
+            return first == null && second == null;
+        }
+    }
+
+    public static class Proxy extends ProcessContext {
+        protected ProcessContext target;
+
+        public Proxy(ProcessContext target) {
+            this.target = PreRequiredHelper.requireNotNull(target);
+        }
+
+        public ProcessContext outputHtml() {
+            return target.outputHtml();
+        }
+
+        public ProcessContext outputText() {
+            return target.outputText();
+        }
+
+        public ProcessContext outputJson() {
+            return target.outputJson();
+        }
+
+        public ProcessContext output(String contextType) {
+            return target.output(contextType);
+        }
+
+        public boolean isHasInvokeOutput() {
+            return target.isHasInvokeOutput();
+        }
+
+        public ProcessContext setHasInvokeOutput(boolean hasInvokeOutput) {
+            return target.setHasInvokeOutput(hasInvokeOutput);
+        }
+
+        public ProcessContext outputFile(String fileName) {
+            return target.outputFile(fileName);
+        }
+
+        public ProcessContext addAttribute(String name, Object value) {
+            return target.addAttribute(name, value);
+        }
+
+        public Map<String, Object> getAttributes() {
+            return target.getAttributes();
+        }
+
+        public ProcessContext addCookie(Cookie cookie) {
+            return target.addCookie(cookie);
+        }
+
+        public Cookie getCookie() {
+            return target.getCookie();
+        }
+
+        public String getContentAsString() {
+            return target.getContentAsString();
+        }
+
+        public String getContentAsString(String encoding) {
+            return target.getContentAsString(encoding);
+        }
+
+        public ChannelHandlerContext getCtx() {
+            return target.getCtx();
+        }
+
+        public HttpHeaders getOutputHeaders() {
+            return target.getOutputHeaders();
+        }
+
+        public ByteBuf getOutputBuffer() {
+            return target.getOutputBuffer();
+        }
+
+        public HttpRequest getRequest() {
+            return target.getRequest();
+        }
+
+        public HttpResponse getResponse() {
+            return target.getResponse();
+        }
+
+        public byte[] getContent() {
+            return target.getContent();
+        }
+
+        public Properties getConfig() {
+            return target.getConfig();
+        }
+
+        public String getUri() {
+            return target.getUri();
+        }
+
+        public String getRequestPath() {
+            return target.getRequestPath();
+        }
+
+        public String getHttpMethod() {
+            return target.getHttpMethod();
+        }
+
+        public Map<String, String> getHeaders() {
+            return target.getHeaders();
+        }
+
+        public Map<String, List<String>> getQueryParam() {
+            return target.getQueryParam();
+        }
+
+        public Tuple<Map<String, List<String>>, Map<String, File>> getPostData() {
+            return target.getPostData();
+        }
+
+        public String getContextPath() {
+            return target.getContextPath();
+        }
+
+        protected Tuple<Map<String, List<String>>, Map<String, File>> processPostData(HttpPostRequestDecoder decoder) {
+            return target.processPostData(decoder);
+        }
+
+        public boolean isGet() {
+            return target.isGet();
+        }
+
+        public boolean isPost() {
+            return target.isPost();
+        }
+
+        public boolean isPut() {
+            return target.isPut();
+        }
+
+        public boolean isDelete() {
+            return target.isDelete();
+        }
+
+        public boolean isProxy() {
+            return true;
+        }
     }
 }

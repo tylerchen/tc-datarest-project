@@ -6,6 +6,7 @@ import java.io.Serializable;
 public class DescColumnModel implements Serializable {
     private String name;
     private String type;
+    private String javaType;
     private Integer size;
     private Integer digit;
     private String defaultValue;
@@ -13,24 +14,29 @@ public class DescColumnModel implements Serializable {
     private String isAutoIncrement;
     private String isNullable;
     private String isPrimaryKey;
+    private String isIndex;
+    private String isCascadeDelete;
+    private String fkCatalog;
+    private String fkSchema;
+    private String fkTable;
+    private String fkColumn;
 
     public DescColumnModel() {
         super();
     }
 
-    public static DescColumnModel create(String name, String type, Integer size, Integer digit, String defaultValue,
-                                         String remarks, String isAutoIncrement, String isNullable, String isPrimaryKey) {
-        DescColumnModel descColumn = new DescColumnModel();
-        descColumn.name = name;
-        descColumn.type = type;
-        descColumn.size = size;
-        descColumn.digit = digit;
-        descColumn.defaultValue = defaultValue;
-        descColumn.remarks = remarks;
-        descColumn.isAutoIncrement = isAutoIncrement;
-        descColumn.isNullable = isNullable;
-        descColumn.isPrimaryKey = isPrimaryKey;
-        return descColumn;
+    public static DescColumnModel create(String name, String type, String javaType, Integer size, Integer digit, String defaultValue, String remarks, String isAutoIncrement, String isNullable) {
+        DescColumnModel dcm = new DescColumnModel();
+        dcm.name = name;
+        dcm.type = type;
+        dcm.javaType = javaType;
+        dcm.size = size;
+        dcm.digit = digit;
+        dcm.defaultValue = defaultValue;
+        dcm.remarks = remarks;
+        dcm.isAutoIncrement = isAutoIncrement;
+        dcm.isNullable = isNullable;
+        return dcm;
     }
 
     public String getName() {
@@ -47,6 +53,14 @@ public class DescColumnModel implements Serializable {
 
     public void setType(String type) {
         this.type = type;
+    }
+
+    public String getJavaType() {
+        return javaType;
+    }
+
+    public void setJavaType(String javaType) {
+        this.javaType = javaType;
     }
 
     public Integer getSize() {
@@ -105,10 +119,72 @@ public class DescColumnModel implements Serializable {
         this.isPrimaryKey = isPrimaryKey;
     }
 
-    @Override
+    public String getIsIndex() {
+        return isIndex;
+    }
+
+    public void setIsIndex(String isIndex) {
+        this.isIndex = isIndex;
+    }
+
+    public String getIsCascadeDelete() {
+        return isCascadeDelete;
+    }
+
+    public void setIsCascadeDelete(String isCascadeDelete) {
+        this.isCascadeDelete = isCascadeDelete;
+    }
+
+    public String getFkCatalog() {
+        return fkCatalog;
+    }
+
+    public void setFkCatalog(String fkCatalog) {
+        this.fkCatalog = fkCatalog;
+    }
+
+    public String getFkSchema() {
+        return fkSchema;
+    }
+
+    public void setFkSchema(String fkSchema) {
+        this.fkSchema = fkSchema;
+    }
+
+    public String getFkTable() {
+        return fkTable;
+    }
+
+    public void setFkTable(String fkTable) {
+        this.fkTable = fkTable;
+    }
+
+    public String getFkColumn() {
+        return fkColumn;
+    }
+
+    public void setFkColumn(String fkColumn) {
+        this.fkColumn = fkColumn;
+    }
+
     public String toString() {
-        return "DescColumn [name=" + name + ", type=" + type + ", size=" + size + ", digit=" + digit + ", defaultValue="
-                + defaultValue + ", remarks=" + remarks + ", isAutoIncrement=" + isAutoIncrement + ", isNullable="
-                + isNullable + ", isPrimaryKey=" + isPrimaryKey + "]";
+        return "DescColumnModel{" +
+                "name='" + name + '\'' +
+                ", type='" + type + '\'' +
+                ", javaType='" + javaType + '\'' +
+                ", size=" + size +
+                ", digit=" + digit +
+                ", defaultValue='" + defaultValue + '\'' +
+                ", remarks='" + remarks + '\'' +
+                ", isAutoIncrement='" + isAutoIncrement + '\'' +
+                ", isNullable='" + isNullable + '\'' +
+                ", isPrimaryKey='" + isPrimaryKey + '\'' +
+                ", isIndex='" + isIndex + '\'' +
+                ", isCascadeDelete='" + isCascadeDelete + '\'' +
+                ", fkCatalog='" + fkCatalog + '\'' +
+                ", fkSchema='" + fkSchema + '\'' +
+                ", fkTable='" + fkTable + '\'' +
+                ", fkColumn='" + fkColumn + '\'' +
+                '}';
     }
 }

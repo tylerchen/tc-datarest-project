@@ -7,6 +7,8 @@
  ******************************************************************************/
 package org.iff.datarest.core.model;
 
+import javax.validation.constraints.NotNull;
+import java.beans.Transient;
 import java.io.Serializable;
 import java.util.Date;
 
@@ -15,8 +17,9 @@ import java.util.Date;
  * @since Oct 9, 2016
  */
 @SuppressWarnings("serial")
-public class DataSourceModel implements Serializable {
-    private String id;
+public class DataSourceModel extends DomainModel<DataSourceModel> implements Serializable {
+    /*private String id;
+    private String namespace;
     private String name;
     private String user;
     private String password;
@@ -27,125 +30,160 @@ public class DataSourceModel implements Serializable {
     private int maxConnection;
     private String description;
     private Date createTime;
-    private Date updateTime;
+    private Date updateTime;*/
 
     public DataSourceModel() {
-        super();
     }
 
-    public static DataSourceModel create(String id, String name, String user, String password, String url,
-                                         String driver, String validationQuery, int initConnection, int maxConnection, Date createTime,
-                                         Date updateTime, String description) {
-        DataSourceModel dataSourceModel = new DataSourceModel();
-        dataSourceModel.id = id;
-        dataSourceModel.name = name;
-        dataSourceModel.user = user;
-        dataSourceModel.password = password;
-        dataSourceModel.url = url;
-        dataSourceModel.driver = driver;
-        dataSourceModel.validationQuery = validationQuery;
-        dataSourceModel.initConnection = initConnection;
-        dataSourceModel.maxConnection = maxConnection;
-        dataSourceModel.createTime = createTime;
-        dataSourceModel.updateTime = updateTime;
-        dataSourceModel.description = description;
-        return dataSourceModel;
+    @Override
+    public DataSourceModel newInstance() {
+        return getClass() == DataSourceModel.class ? new DataSourceModel() : super.newInstance();
     }
 
+    @Override
+    public DataSourceModel init(@NotNull String namespace, @NotNull String modelName) {
+        super.init(namespace, modelName);
+        setNamespace(namespace);
+        return this;
+    }
+
+    @Transient
     public String getId() {
-        return id;
+        return (String) get("ID");
     }
 
+    @Transient
     public void setId(String id) {
-        this.id = id;
+        put("ID", id);
     }
 
+    @Transient
+    public String getNamespace() {
+        return (String) get("NAMESPACE");
+    }
+
+    @Transient
+    public void setNamespace(String namespace) {
+        put("NAMESPACE", namespace);
+    }
+
+    @Transient
     public String getName() {
-        return name;
+        return (String) get("NAME");
     }
 
+    @Transient
     public void setName(String name) {
-        this.name = name;
+        put("NAME", name);
     }
 
+    @Transient
     public String getUser() {
-        return user;
+        return (String) get("USER");
     }
 
+    @Transient
     public void setUser(String user) {
-        this.user = user;
+        put("USER", user);
     }
 
+    @Transient
     public String getPassword() {
-        return password;
+        return (String) get("PASSWORD");
     }
 
+    @Transient
     public void setPassword(String password) {
-        this.password = password;
+        put("PASSWORD", password);
     }
 
+    @Transient
     public String getUrl() {
-        return url;
+        return (String) get("URL");
     }
 
+    @Transient
     public void setUrl(String url) {
-        this.url = url;
+        put("URL", url);
     }
 
+    @Transient
     public String getDriver() {
-        return driver;
+        return (String) get("DRIVER");
     }
 
+    @Transient
     public void setDriver(String driver) {
-        this.driver = driver;
+        put("DRIVER", driver);
     }
 
+    @Transient
     public String getValidationQuery() {
-        return validationQuery;
+        return (String) get("VALIDATION_QUERY");
     }
 
+    @Transient
     public void setValidationQuery(String validationQuery) {
-        this.validationQuery = validationQuery;
+        put("VALIDATION_QUERY", validationQuery);
     }
 
-    public int getInitConnection() {
-        return initConnection;
+    @Transient
+    public Integer getInitConnection() {
+        return (Integer) get("INIT_CONNECTION");
     }
 
+    @Transient
     public void setInitConnection(int initConnection) {
-        this.initConnection = initConnection;
+        put("INIT_CONNECTION", initConnection);
     }
 
-    public int getMaxConnection() {
-        return maxConnection;
+    @Transient
+    public Integer getMaxConnection() {
+        return (Integer) get("MAX_CONNECTION");
     }
 
-    public void setMaxConnection(int maxConnection) {
-        this.maxConnection = maxConnection;
+    @Transient
+    public void setMaxConnection(Integer maxConnection) {
+        put("MAX_CONNECTION", maxConnection);
     }
 
+    @Transient
+    public String getDecryptKey() {
+        return (String) get("DECRYPT_KEY");
+    }
+
+    @Transient
+    public void setDdecryptKey(String decryptKey) {
+        put("DECRYPT_KEY", decryptKey);
+    }
+
+    @Transient
     public String getDescription() {
-        return description;
+        return (String) get("DESCRIPTION");
     }
 
+    @Transient
     public void setDescription(String description) {
-        this.description = description;
+        put("DESCRIPTION", description);
     }
 
+    @Transient
     public Date getCreateTime() {
-        return createTime;
+        return (Date) get("CREATE_TIME");
     }
 
+    @Transient
     public void setCreateTime(Date createTime) {
-        this.createTime = createTime;
+        put("CREATE_TIME", createTime);
     }
 
+    @Transient
     public Date getUpdateTime() {
-        return updateTime;
+        return (Date) get("UPDATE_TIME");
     }
 
+    @Transient
     public void setUpdateTime(Date updateTime) {
-        this.updateTime = updateTime;
+        put("UPDATE_TIME", updateTime);
     }
-
 }
