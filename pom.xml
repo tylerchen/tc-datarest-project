@@ -289,6 +289,9 @@
             <resource>
                 <directory>src/main/resources</directory>
                 <filtering>true</filtering>
+                <excludes>
+                    <exclude>src/main/resources/assembly/**</exclude>
+                </excludes>
             </resource>
         </resources>
         <testResources>
