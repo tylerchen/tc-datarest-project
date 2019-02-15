@@ -10,6 +10,8 @@ package org.iff.datarest.core;
 import org.apache.commons.collections.MapUtils;
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.iff.datarest.core.mybatis.MyBatisSqlSessionFactory;
+import org.iff.datarest.core.service.DomainEventService;
 import org.iff.infra.util.*;
 import org.iff.infra.util.mybatis.service.RepositoryService;
 import org.iff.netty.server.ProcessContext;
@@ -38,10 +40,7 @@ import java.util.Map;
  * @since Sep 24, 2016
  */
 public class DomainActionHandler extends BaseActionHandler {
-
-    public static final String URI_SPLIT = "uriSplit";
     public static final String uriPrefix = "/rest";
-    public static final String RES_RECYCLE = "RES_RECYCLE";
 
     private String getNamespace(String[] uriSplit) {
         return PreRequiredHelper.requireNotBlank(PreRequiredHelper.requireMinLength(uriSplit, 2)[1]);

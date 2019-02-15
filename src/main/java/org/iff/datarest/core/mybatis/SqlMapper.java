@@ -1,4 +1,4 @@
-package org.iff.datarest.core;
+package org.iff.datarest.core.mybatis;
 
 import org.apache.ibatis.exceptions.TooManyResultsException;
 import org.apache.ibatis.mapping.*;

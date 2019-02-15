@@ -6,10 +6,11 @@
  *     <a href="mailto:iffiff1@gmail.com">Tyler Chen</a> - initial API and implementation.
  * Auto Generate By foreveross.com Quick Deliver Platform. 
  ******************************************************************************/
-package org.iff.datarest.core;
+package org.iff.datarest.core.service;
 
 import org.apache.commons.dbutils.QueryRunner;
 import org.apache.commons.lang3.StringUtils;
+import org.iff.datarest.core.mybatis.MyBatisSqlSessionFactory;
 import org.iff.datarest.core.model.DescColumnModel;
 import org.iff.datarest.core.model.DescTableModel;
 import org.iff.datarest.util.SqlTypeMappingHelper;

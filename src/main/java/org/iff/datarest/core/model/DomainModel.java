@@ -8,7 +8,7 @@
  ******************************************************************************/
 package org.iff.datarest.core.model;
 
-import org.iff.datarest.core.DomainEventService;
+import org.iff.datarest.core.service.DomainEventService;
 import org.iff.datarest.util.FieldNameHelper;
 import org.iff.infra.util.*;
 

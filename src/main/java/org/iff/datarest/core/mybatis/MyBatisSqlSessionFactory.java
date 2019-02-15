@@ -6,7 +6,7 @@
  *     <a href="mailto:iffiff1@gmail.com">Tyler Chen</a> - initial API and implementation.
  * Auto Generate By foreveross.com Quick Deliver Platform. 
  ******************************************************************************/
-package org.iff.datarest.core;
+package org.iff.datarest.core.mybatis;
 
 import org.apache.commons.collections.MapUtils;
 import org.apache.ibatis.executor.statement.RoutingStatementHandler;

@@ -9,7 +9,7 @@
 package org.iff.datarest.core.model;
 
 import org.apache.commons.lang3.StringUtils;
-import org.iff.datarest.core.DDLEventService;
+import org.iff.datarest.core.service.DDLEventService;
 import org.iff.datarest.util.FieldNameHelper;
 import org.iff.infra.util.Assert;
 import org.iff.infra.util.EventBusHelper;

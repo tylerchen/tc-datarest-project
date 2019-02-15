@@ -5,7 +5,7 @@
  * Contributors:
  *     <a href="mailto:iffiff1@gmail.com">Tyler Chen</a> - initial API and implementation
  ******************************************************************************/
-package org.iff.datarest.core;
+package org.iff.datarest.core.mybatis;
 
 import org.apache.commons.dbutils.DbUtils;
 

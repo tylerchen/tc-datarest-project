@@ -9,7 +9,7 @@
 package org.iff.datarest.util;
 
 import org.apache.commons.collections.MapUtils;
-import org.iff.datarest.core.MyBatisSqlSessionFactory;
+import org.iff.datarest.core.mybatis.MyBatisSqlSessionFactory;
 import org.iff.infra.util.EventBusHelper;
 import org.iff.infra.util.Exceptions;
 import org.iff.infra.util.SocketHelper;
