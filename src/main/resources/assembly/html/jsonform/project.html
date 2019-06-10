@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8"/>
+    <title>Getting started with JSON Form</title>
+    <style>
+      @import url("../resources/jsonform/deps/opt/bootstrap.css");
+      @import url("../resources/jsonform/deps/opt/bootstrap-wysihtml5.css");
+      @import url("../resources/jsonform/deps/opt/spectrum.css");
+      h2 { font-weight: 200; margin-top: 0;}
+      .tagline {
+        padding: 10px;
+        font-weight: 200;
+        margin-top: -1em;
+      }
+
+      .footer {
+        margin-top: 40px;
+        padding: 10px 0.5em;
+        border-top: 1px solid #E5E5E5;
+      }
+
+      #form .add-on {
+        border: none;
+        background-color: inherit;
+      }
+
+      .expandable > legend:before {
+        content: '\25B8';
+        padding-right: 5px;
+      }
+      .expanded > legend:before {
+        content: '\25BE';
+      }
+
+      ._jsonform-array-buttons {
+        margin-left: 25px;
+      }
+
+      .jsonform-required > label:after {
+        content: ' *';
+        color: red;
+      }
+
+      form.jsonform-hasrequired:after {
+        content: '* Required field';
+        display: block;
+        color: red;
+        padding-top: 1em;
+      }
+
+      .help-block.jsonform-errortext{
+        color: red;
+      }
+
+      div.radio{display:inline;}
+
+      .well{
+        background-color: #fff;
+      }
+    </style>
+</head>
+<body>
+<nav class="navbar navbar-inverse navbar-static-top">
+    <div class="container">
+        <ul class="nav navbar-nav">
+            <li><a href="#">Home</a></li>
+        </ul>
+    </div>
+</nav>
+
+<div class="container">
+    <div class="tagline">
+        <p>QDP project designer.</p>
+    </div>
+
+    <div class="row">
+        <div class="col-2">
+        </div>
+        <div class="col-8">
+            <h2>Project</h2>
+            <div id="result" class="well">
+                <form id="form" class="form-vertical" action="/gen"></form>
+            </div>
+        </div>
+        <div class="col-2">
+        </div>
+    </div>
+
+</div>
+<footer class="footer">
+    <div class="container">
+        <p>Originally created by Tyler Chen</p>
+    </div>
+</footer>
+<script src="../resources/jsonform/deps/jquery.min.js"></script>
+<script src="../resources/jsonform/deps/underscore.js"></script>
+<script src="../resources/jsonform/deps/opt/jsv.js"></script>
+<script src="../resources/jsonform/deps/opt/jquery-ui.js"></script>
+<script src="../resources/jsonform/deps/opt/bootstrap-dropdown.js"></script>
+<script src="../resources/jsonform/deps/opt/bootstrap-wysihtml5.js"></script>
+<script src="../resources/jsonform/deps/opt/spectrum.js"></script>
+<script src="../resources/jsonform/deps/opt/jquery.transloadit2.js"></script>
+<script src="../resources/jsonform/jsonform.js"></script>
+<script src="./project.js"></script>
+<script type="text/javascript">
+$('form').jsonForm({
+    schema: jsonSchema,
+    form: formSchema,
+    validate: true,
+    value: defaultValue,
+    onSubmit: function (errors, values) {
+      if (errors) {
+        $('#res').html('<p>I beg your pardon?</p>');
+      }else {
+        var content = $('form').jsonFormValue();
+        //alert(JSON.stringify(content));
+        $.ajax({
+          method: "POST",
+          url: "/gen",
+          contentType: 'text/plain',
+          data: JSON.stringify(content)
+        });
+      }
+    },
+    displayErrors: function (errors, formElt) {
+        var message=[];
+        for (var i=0; i<errors.length; i++) {
+            errors[i].message = 'Error: ' + errors[i].details;
+            // These URIs typically look like:
+            //  urn:uuid:cccc265e-ffdd-4e40-8c97-977f7a512853#/pictures/1/thumbnail
+            // What we need from that is the path in the value object:
+            //  pictures[1].thumbnail
+            var key = errors[i].uri.replace(/.*#\//, '').replace(/\//g, '.').replace(/\.([0-9]+)(?=\.|$)/g, '[$1]');
+            var selector = ".jsonform-error-" +key.replace(/\./g,'---').replace(/([ \!\"\#\$\%\&\'\(\)\*\+\,\.\/\:\;<\=\>\?\@\[\\\]\^\`\{\|\}\~])/g, '\\$1');
+            try{
+                message.push($(selector+' label:first').text()+'='+$(selector+' .controls .form-control').get(0).value+', Error detail:'+errors[i].details);
+            }catch(err){
+            }
+            $(formElt).jsonFormErrors(errors);
+        }
+        if(message.length>0){
+            alert(message.join('\n'));
+        }
+    }
+});
+</script>
+</body>
+</html>

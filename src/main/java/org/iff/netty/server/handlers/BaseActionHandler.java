@@ -49,7 +49,7 @@ public abstract class BaseActionHandler implements ActionHandler {
         return "";
     }
 
-    public abstract boolean execute(ProcessContext ctx);
+    public abstract boolean execute(ProcessContext ctx) throws Exception;
 
     public ActionHandler process(ProcessContext ctx) {
         try {

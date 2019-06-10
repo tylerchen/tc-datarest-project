@@ -10,6 +10,7 @@ package org.iff.datarest;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.math.NumberUtils;
 import org.apache.log4j.xml.DOMConfigurator;
+import org.h2.tools.Server;
 import org.iff.datarest.core.model.DataSourceModel;
 import org.iff.datarest.core.mybatis.DataSourceFactory;
 import org.iff.datarest.core.mybatis.MyBatisSqlSessionFactory;
@@ -25,7 +26,9 @@ import org.iff.netty.server.HttpServer;
 import org.iff.netty.server.handlers.ActionHandler;
 
 import javax.sql.DataSource;
+import java.io.Closeable;
 import java.io.File;
+import java.io.IOException;
 import java.util.*;
 import java.util.Map.Entry;
 
@@ -217,6 +220,21 @@ public class Main {
         EventBusHelper.me().regist(SystemEventService.EVENT_NAME, new SystemEventService());
         CacheHelper.init(new CacheHelper.MapCacheable());
         BeanHelper.setUsePOVOCopyHelper(true);
+        {//start h2 database.
+            try {
+                Logger.info("Starting H2 database...");
+                Server server = Server.createTcpServer("-tcpPort", "9988", "-tcpAllowOthers", "-baseDir", "/Users/zhaochen/dev/workspace/idea/tc-h2-project/target").start();
+                ShutdownHookHelper.register("h2", new Closeable() {
+                    public void close() throws IOException {
+                        Logger.info("Stopping H2 database...");
+                        server.shutdown();
+                    }
+                });
+                Logger.info("Starting H2 database done.");
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
         {//fill query to cache
             File file = find("", new String[]{PATH_QUERY, PATH_QUERY_DEV});
             if (file != null) {

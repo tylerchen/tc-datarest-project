@@ -48,10 +48,6 @@ public class CrudService {
         return list;
     }
 
-    static interface Compare {
-        boolean compare(String value);
-    }
-
     public static class GenMappedSql {
         public String gen(ProjectModel projectModel) {
             ArrayList<String> contents = new ArrayList<>();

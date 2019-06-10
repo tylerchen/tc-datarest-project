@@ -11,10 +11,7 @@ package org.iff.datarest.core.model;
 import org.apache.commons.lang3.StringUtils;
 
 import java.beans.Transient;
-import java.util.ArrayList;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * CrudModel
@@ -36,6 +33,14 @@ public class CrudModel extends DomainModel<CrudModel> {
         public static final String version = "version";
         public static final String templateVersion = "templateVersion";
         public static final String modules = "modules";
+        public static final Set<FieldDefine> fieldDefines = FieldDefine.unmodifiableSet(
+                FieldDefine.createString(id), FieldDefine.createString(groupId), FieldDefine.createString(artifactId),
+                FieldDefine.createString(version), FieldDefine.createString(templateVersion), FieldDefine.create(List.class, modules));
+
+        @Override
+        public Set<FieldDefine> fieldDefines() {
+            return fieldDefines;
+        }
 
         @Override
         public ProjectModel newInstance() {
@@ -63,6 +68,14 @@ public class CrudModel extends DomainModel<CrudModel> {
         public static final String packageName = "packageName";
         public static final String alias = "alias";
         public static final String businesses = "businesses";
+        public static final Set<FieldDefine> fieldDefines = FieldDefine.unmodifiableSet(
+                FieldDefine.createString(id), FieldDefine.createString(name), FieldDefine.createString(packageName),
+                FieldDefine.createString(alias), FieldDefine.create(List.class, businesses));
+
+        @Override
+        public Set<FieldDefine> fieldDefines() {
+            return fieldDefines;
+        }
 
         @Override
         public ModuleModel newInstance() {
@@ -92,6 +105,14 @@ public class CrudModel extends DomainModel<CrudModel> {
         public static final String tableName = "tableName";
         public static final String functions = "functions";
         public static final String actions = "actions";
+        public static final Set<FieldDefine> fieldDefines = FieldDefine.unmodifiableSet(
+                FieldDefine.createString(id), FieldDefine.createString(name), FieldDefine.createString(packageName),
+                FieldDefine.createString(alias), FieldDefine.createString(tableName), FieldDefine.create(List.class, functions), FieldDefine.create(List.class, actions));
+
+        @Override
+        public Set<FieldDefine> fieldDefines() {
+            return fieldDefines;
+        }
 
         @Override
         public BusinessModel newInstance() {
@@ -134,6 +155,14 @@ public class CrudModel extends DomainModel<CrudModel> {
         public static final String alias = "alias";
         public static final String type = "type";
         public static final String fields = "fields";
+        public static final Set<FieldDefine> fieldDefines = FieldDefine.unmodifiableSet(
+                FieldDefine.createString(id), FieldDefine.createString(name), FieldDefine.createString(fileName),
+                FieldDefine.createString(alias), FieldDefine.createString(type), FieldDefine.create(List.class, fields));
+
+        @Override
+        public Set<FieldDefine> fieldDefines() {
+            return fieldDefines;
+        }
 
         @Override
         public FunctionModel newInstance() {
@@ -167,6 +196,14 @@ public class CrudModel extends DomainModel<CrudModel> {
         public static final String actionType = "actionType";
         public static final String shortCut = "shortCut";
         public static final String actionIcon = "actionIcon";
+        public static final Set<FieldDefine> fieldDefines = FieldDefine.unmodifiableSet(
+                FieldDefine.createString(id), FieldDefine.createString(actionName), FieldDefine.createString(eventName),
+                FieldDefine.createString(actionType), FieldDefine.createString(shortCut), FieldDefine.createString(actionIcon));
+
+        @Override
+        public Set<FieldDefine> fieldDefines() {
+            return fieldDefines;
+        }
 
         @Override
         public ActionModel newInstance() {
@@ -202,7 +239,6 @@ public class CrudModel extends DomainModel<CrudModel> {
         public static final String htmlWordbreak = "htmlWordbreak";
         public static final String dataUrl = "dataUrl";
         public static final String dataJson = "dataJson";
-        public static final String dataJsonSelect = "dataJsonSelect";
         public static final String typeAll = "typeAll";
         public static final String typeAdd = "typeAdd";
         public static final String typeEdit = "typeEdit";
@@ -231,6 +267,34 @@ public class CrudModel extends DomainModel<CrudModel> {
         public static final String ruleNotBlank = "ruleNotBlank";
         public static final String ruleNotBlankMsg = "ruleNotBlankMsg";
         public static final String exJsonData = "exJsonData";
+
+        public static final Set<FieldDefine> fieldDefines = FieldDefine.unmodifiableSet(
+                FieldDefine.createString(id), FieldDefine.createString(fieldName), FieldDefine.createString(fieldAlias),
+                FieldDefine.createString(fieldColumn), FieldDefine.createString(fieldColType), FieldDefine.createString(fieldJavaType),
+                FieldDefine.createString(fieldLength), FieldDefine.createString(fieldScale), FieldDefine.createString(fieldValue),
+                FieldDefine.createString(fieldDesc), FieldDefine.createString(fieldSeq),
+                FieldDefine.createString(isNull), FieldDefine.createString(isPk), FieldDefine.createString(isIndex),
+                FieldDefine.createString(isUnique), FieldDefine.createString(isAutoIncrease), FieldDefine.createString(isNonTableColumn),
+                FieldDefine.createString(ableAdd), FieldDefine.createString(ableEdit), FieldDefine.createString(ableList),
+                FieldDefine.createString(ableInfo), FieldDefine.createString(ableSearch), FieldDefine.createString(ableSort),
+                FieldDefine.createString(htmlWidth), FieldDefine.createString(htmlWordbreak), FieldDefine.createString(dataUrl),
+                FieldDefine.createString(dataJson),
+                FieldDefine.createString(typeAll), FieldDefine.createString(typeAdd), FieldDefine.createString(typeEdit),
+                FieldDefine.createString(typeGrid), FieldDefine.createString(typeInfo), FieldDefine.createString(typeSearch),
+                FieldDefine.createString(refTable), FieldDefine.createString(refField), FieldDefine.createString(refLabelField),
+                FieldDefine.createString(midTable), FieldDefine.createString(midMainField), FieldDefine.createString(midSecondField),
+                FieldDefine.createString(uniqueFields),
+                FieldDefine.createString(ruleType), FieldDefine.createString(ruleRequired), FieldDefine.createString(ruleRequiredMsg),
+                FieldDefine.createString(ruleRegex), FieldDefine.createString(ruleRegexMsg), FieldDefine.createString(ruleRangeMin),
+                FieldDefine.createString(ruleRangeMax), FieldDefine.createString(ruleRangeMsg), FieldDefine.createString(ruleLength),
+                FieldDefine.createString(ruleLengthMsg), FieldDefine.createString(ruleEnums), FieldDefine.createString(ruleEnumsMsg),
+                FieldDefine.createString(ruleNotBlank), FieldDefine.createString(ruleNotBlankMsg), FieldDefine.createString(exJsonData)
+        );
+
+        @Override
+        public Set<FieldDefine> fieldDefines() {
+            return fieldDefines;
+        }
 
         @Override
         public FieldModel newInstance() {

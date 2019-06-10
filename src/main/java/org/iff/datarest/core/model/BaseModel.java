@@ -30,9 +30,9 @@ import java.util.*;
  * auto generate by qdp.
  */
 public abstract class BaseModel<T extends BaseModel> extends LinkedHashMap<String, Object> implements Serializable, Map<String, Object>, Cloneable {
-    transient String namespace;
-    transient String modelName;
-    transient DescTableModel table;
+    protected transient String namespace;
+    protected transient String modelName;
+    protected transient DescTableModel table;
 
     public BaseModel() {
     }
@@ -44,13 +44,18 @@ public abstract class BaseModel<T extends BaseModel> extends LinkedHashMap<Strin
     public abstract T newInstance();
 
     @Transient
+    public Set<FieldDefine> fieldDefines() {
+        return Collections.EMPTY_SET;
+    }
+
+    @Transient
     public T setValues(Object... keyValue) {
-        if (keyValue == null) {
+        if (keyValue == null || keyValue.length < 1) {
             return (T) this;
         }
         Assert.isTrue(keyValue.length % 2 == 0);
         for (int i = 0; i < keyValue.length; ++i) {
-            super.put((String) keyValue[i++], keyValue[i]);
+            put((String) keyValue[i++], keyValue[i]);
         }
         return (T) this;
     }
@@ -146,6 +151,95 @@ public abstract class BaseModel<T extends BaseModel> extends LinkedHashMap<Strin
         }
         return false;
     }
+
+    /**
+     * Overide the Map.put if fieldDefines is empty or fieldDefines contains the key then put the value.
+     *
+     * @param key
+     * @param value
+     * @return
+     */
+    @Transient
+    public Object put(String key, Object value) {
+        if (!fieldDefines().isEmpty() && !fieldDefines().contains(key)) {
+            return null;
+        }
+        return super.put(key, value);
+    }
+
+    /**
+     * Overide the Map.putAll if fieldDefines is empty or fieldDefines contains the key then put the value.
+     *
+     * @param m
+     */
+    @Transient
+    public void putAll(Map<? extends String, ?> m) {
+        if (m == null || m.isEmpty()) {
+            return;
+        }
+        if (fieldDefines().isEmpty()) {
+            super.putAll(m);
+            return;
+        }
+        Map tmp = new LinkedHashMap<>();
+        for (Entry<? extends String, ?> e : m.entrySet()) {
+            if (!fieldDefines().contains(e.getKey())) {
+                continue;
+            }
+            tmp.put(e.getKey(), e.getValue());
+        }
+        super.putAll(tmp);
+    }
+
+    /**
+     * Overide the Map.putIfAbsent if fieldDefines is empty or fieldDefines contains the key then put the value.
+     *
+     * @param key
+     * @param value
+     * @return
+     */
+    @Transient
+    public Object putIfAbsent(String key, Object value) {
+        if (!fieldDefines().isEmpty() && !fieldDefines().contains(key)) {
+            return null;
+        }
+        return super.putIfAbsent(key, value);
+    }
+
+    /**
+     * Overide the Map.put and ignore fieldDefines setting.
+     *
+     * @param key
+     * @param value
+     * @return
+     */
+    @Transient
+    public Object putForce(String key, Object value) {
+        return super.put(key, value);
+    }
+
+    /**
+     * Overide the Map.putAll and ignore fieldDefines setting.
+     *
+     * @param m
+     */
+    @Transient
+    public void putAllForce(Map<? extends String, ?> m) {
+        super.putAll(m);
+    }
+
+    /**
+     * Overide the Map.putIfAbsent and ignore fieldDefines setting.
+     *
+     * @param key
+     * @param value
+     * @return
+     */
+    @Transient
+    public Object putIfAbsentForce(String key, Object value) {
+        return super.putIfAbsent(key, value);
+    }
+
 
     @Transient
     public String namespace() {
